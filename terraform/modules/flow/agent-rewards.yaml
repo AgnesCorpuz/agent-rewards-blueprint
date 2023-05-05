@@ -1,0 +1,373 @@
+inboundCall:
+  name: "{{flow_name}}"
+  division: "{{division}}"
+  startUpRef: "/inboundCall/tasks/task[Reward_12]"
+  defaultLanguage: "{{default_language}}"
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+      textToSpeech:
+        defaultEngine:
+          voice: Jill
+  initialGreeting:
+    tts: "\"\""
+  settingsActionDefaults:
+    playAudioOnSilence:
+      timeout:
+        lit:
+          seconds: 40
+    detectSilence:
+      timeout:
+        lit:
+          seconds: 40
+    callData:
+      processingPrompt:
+        lit:
+          name: PromptSystem.processing
+    collectInput:
+      noEntryTimeout:
+        lit:
+          seconds: 5
+    dialByExtension:
+      interDigitTimeout:
+        lit:
+          seconds: 6
+    transferToUser:
+      connectTimeout:
+        noValue: true
+    transferToNumber:
+      connectTimeout:
+        noValue: true
+    transferToGroup:
+      connectTimeout:
+        noValue: true
+    transferToFlowSecure:
+      connectTimeout:
+        lit:
+          seconds: 15
+  settingsErrorHandling:
+    errorHandling:
+      disconnect:
+        none: true
+    preHandlingAudio:
+      tts: Sorry, an error occurred. Please try your call again.
+  settingsMenu:
+    extensionDialingMaxDelay:
+      lit:
+        seconds: 1
+    listenForExtensionDialing:
+      lit: true
+    menuSelectionTimeout:
+      lit:
+        seconds: 10
+    repeatCount:
+      lit: 3
+  settingsPrompts:
+    ensureAudioInPrompts: false
+    promptMediaToValidate:
+      - mediaType: audio
+      - mediaType: tts
+  settingsSpeechRec:
+    completeMatchTimeout:
+      lit:
+        ms: 100
+    incompleteMatchTimeout:
+      lit:
+        ms: 1500
+    maxSpeechLengthTimeout:
+      lit:
+        seconds: 20
+    minConfidenceLevel:
+      lit: 50
+    asrCompanyDir: none
+    asrEnabledOnFlow: true
+  menus:
+    - menu:
+        name: Main Menu
+        refId: Main Menu_10
+        audio:
+          tts: You are at the Main Menu, press 9 to disconnect
+        settingsMenu:
+          extensionDialingMaxDelay:
+            noValue: true
+          listenForExtensionDialing:
+            noValue: true
+          menuSelectionTimeout:
+            noValue: true
+          repeatCount:
+            noValue: true
+        settingsSpeechRec:
+          completeMatchTimeout:
+            noValue: true
+          incompleteMatchTimeout:
+            noValue: true
+          maxSpeechLengthTimeout:
+            noValue: true
+          minConfidenceLevel:
+            noValue: true
+        choices:
+          - menuDisconnect:
+              name: Disconnect
+              dtmf: digit_9
+              globalDtmf: false
+              globalSpeechRecTerms: false
+  tasks:
+    - task:
+        name: Reward
+        refId: Reward_12
+        variables:
+          - stringVariable:
+              name: Task.AgentID
+              initialValue:
+                noValue: true
+              isInput: false
+              isOutput: false
+          - stringVariable:
+              name: Task.Choice
+              initialValue:
+                noValue: true
+              isInput: false
+              isOutput: false
+          - integerVariable:
+              name: Task.CurrentScore
+              initialValue:
+                noValue: true
+              isInput: false
+              isOutput: false
+          - stringVariable:
+              name: Task.Recommend
+              initialValue:
+                noValue: true
+              isInput: false
+              isOutput: false
+          - stringVariable:
+              name: Task.Reward
+              initialValue:
+                noValue: true
+              isInput: false
+              isOutput: false
+        actions:
+          - playAudio:
+              name: Thank you for participating
+              audio:
+                tts: Thank you for participating in a review of your call.
+          - collectInput:
+              name: Rate Experience
+              inputData:
+                var: Task.Recommend
+              digits:
+                exact: 1
+              interDigitTimeout:
+                noValue: true
+              noEntryTimeout:
+                noValue: true
+              inputAudio:
+                tts: Given your experience, how likely are you to recommend our company to your family or friends.  For extremely likely, press 1.  For very likely, press 2.  For moderately likely, press 3.  For slightly likely, press 4.  And for not at all likely, press 5.
+              acceptJustStar:
+                lit: false
+              acceptJustPound:
+                lit: false
+              verificationType: none
+              outputs:
+                success:
+                  actions:
+                    - decision:
+                        name: If positive experience
+                        condition:
+                          exp: "(Task.Recommend == \"1\") or (Task.Recommend == \"2\") or (Task.Recommend == \"3\") "
+                        outputs:
+                          "yes":
+                            actions:
+                              - collectInput:
+                                  name: Want to reward?
+                                  inputData:
+                                    var: Task.Reward
+                                  digits:
+                                    exact: 1
+                                  interDigitTimeout:
+                                    noValue: true
+                                  noEntryTimeout:
+                                    noValue: true
+                                  inputAudio:
+                                    tts: Would you like to reward your agent for their help on the call.  For yes, press 1.  For no, press 2.
+                                  acceptJustStar:
+                                    lit: false
+                                  acceptJustPound:
+                                    lit: false
+                                  verificationType: none
+                                  outputs:
+                                    success:
+                                      actions:
+                                        - decision:
+                                            name: If yes to reward
+                                            condition:
+                                              exp: Task.Reward == "1"
+                                            outputs:
+                                              "yes":
+                                                actions:
+                                                  - collectInput:
+                                                      name: Ask for reward chocie
+                                                      inputData:
+                                                        var: Task.Choice
+                                                      digits:
+                                                        exact: 1
+                                                      interDigitTimeout:
+                                                        noValue: true
+                                                      noEntryTimeout:
+                                                        noValue: true
+                                                      inputAudio:
+                                                        tts: Which reward would you like us to give the agent.  This is at no cost to you.  For a high five, press 1.  For a soft drink, press 2.  For a delivered snack, press 3.  Or for a specialty coffee, press 4.
+                                                      acceptJustStar:
+                                                        lit: false
+                                                      acceptJustPound:
+                                                        lit: false
+                                                      verificationType: none
+                                                      outputs:
+                                                        success:
+                                                          actions:
+                                                            - callData:
+                                                                name: Call Data Action
+                                                                processingPrompt:
+                                                                  noValue: true
+                                                                category:
+                                                                  {{data_action_category}}:
+                                                                    dataAction:
+                                                                      {{data_action_name_1}}:
+                                                                        inputs:
+                                                                          conversationId:
+                                                                            exp: Call.ConversationId
+                                                                        successOutputs:
+                                                                          agentId:
+                                                                            var: Task.AgentID
+                                                                outputs:
+                                                                  success:
+                                                                    actions:
+                                                                      - dataTableLookup:
+                                                                          name: Get the agent's current score
+                                                                          lookupValue:
+                                                                            exp: Task.AgentID
+                                                                          dataTable:
+                                                                            {{data_table}}:
+                                                                              foundOutputs:
+                                                                                Score:
+                                                                                  var: Task.CurrentScore
+                                                                              failureOutputs:
+                                                                                errorType:
+                                                                                  noValue: true
+                                                                                errorMessage:
+                                                                                  noValue: true
+                                                                          outputs:
+                                                                            found:
+                                                                              actions:
+                                                                                - switch:
+                                                                                    name: Switch on the award choice
+                                                                                    evaluate:
+                                                                                      firstTrue:
+                                                                                        cases:
+                                                                                          - case:
+                                                                                              value:
+                                                                                                exp: Task.Choice == "1"
+                                                                                              actions:
+                                                                                                - playAudio:
+                                                                                                    name: Confirm the reward to the caller
+                                                                                                    audio:
+                                                                                                      tts: Excellent.  We’ll get that high five to them as soon as possible.
+                                                                                                - updateData:
+                                                                                                    name: Set reward point value
+                                                                                                    statements:
+                                                                                                      - integer:
+                                                                                                          variable: Task.CurrentScore
+                                                                                                          value:
+                                                                                                            exp: Task.CurrentScore + 10
+                                                                                          - case:
+                                                                                              value:
+                                                                                                exp: Task.Choice == "2"
+                                                                                              actions:
+                                                                                                - playAudio:
+                                                                                                    name: Confirm the reward to the caller
+                                                                                                    audio:
+                                                                                                      tts: Excellent.  We’ll get that soft drink to them as soon as possible.
+                                                                                                - updateData:
+                                                                                                    name: Set reward point value
+                                                                                                    statements:
+                                                                                                      - integer:
+                                                                                                          variable: Task.CurrentScore
+                                                                                                          value:
+                                                                                                            exp: Task.CurrentScore + 20
+                                                                                          - case:
+                                                                                              value:
+                                                                                                exp: Task.Choice == "3"
+                                                                                              actions:
+                                                                                                - playAudio:
+                                                                                                    name: Confirm the reward to the caller
+                                                                                                    audio:
+                                                                                                      tts: Excellent.  We’ll get that snack delivered to them as soon as possible.
+                                                                                                - updateData:
+                                                                                                    name: Set reward point value
+                                                                                                    statements:
+                                                                                                      - integer:
+                                                                                                          variable: Task.CurrentScore
+                                                                                                          value:
+                                                                                                            exp: Task.CurrentScore + 30
+                                                                                          - case:
+                                                                                              value:
+                                                                                                exp: Task.Choice == "4"
+                                                                                              actions:
+                                                                                                - playAudio:
+                                                                                                    name: Confirm the reward to the caller
+                                                                                                    audio:
+                                                                                                      tts: Excellent.  We’ll get that specialty coffee to them as soon as possible.
+                                                                                                - updateData:
+                                                                                                    name: Set reward point value
+                                                                                                    statements:
+                                                                                                      - integer:
+                                                                                                          variable: Task.CurrentScore
+                                                                                                          value:
+                                                                                                            exp: Task.CurrentScore + 40
+                                                                                - callData:
+                                                                                    name: Update the agent's current score
+                                                                                    processingPrompt:
+                                                                                      noValue: true
+                                                                                    category:
+                                                                                      {{data_action_category}}:
+                                                                                        dataAction:
+                                                                                          {{data_action_name_2}}:
+                                                                                            inputs:
+                                                                                              datatableid:
+                                                                                                lit: ad3a6296-0f13-4ed5-bc76-d02084627cfe
+                                                                                              key:
+                                                                                                lit: 186d2336-306d-454b-8427-3afdf14621cd
+                                                                                              score:
+                                                                                                noValue: true
+                                                                                            successOutputs:
+                                                                                              key:
+                                                                                                noValue: true
+                                                                                              score:
+                                                                                                noValue: true
+                                                                                    outputs:
+                                                                                      success:
+                                                                                        actions:
+                                                                                          - callData:
+                                                                                              name: Call Data Action
+                                                                                              processingPrompt:
+                                                                                                noValue: true
+                                                                                              category:
+                                                                                                {{data_action_category}}:
+                                                                                                  dataAction:
+                                                                                                    {{data_action_name_3}}:
+                                                                                                      inputs:
+                                                                                                        agentId:
+                                                                                                          exp: Task.AgentID
+                                                                                                        date:
+                                                                                                          exp: ToString(GetCurrentDateTimeUtc())
+                                                                                                        metricId:
+                                                                                                          lit: 3d9a939b-4a3f-4dbf-8bab-bfe6488c00a1
+                                                                                                        score:
+                                                                                                          exp: Task.CurrentScore
+          - playAudio:
+              name: Play Audio
+              audio:
+                tts: Thank you for the review.  Goodbye.
+          - disconnect:
+              name: Disconnect

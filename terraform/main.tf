@@ -53,7 +53,7 @@ module "data_table" {
 }
 
 /*   
-   Configures the architect inbound message flow
+   Configures the architect inbound call flow
 */
 module "archy_flow" {
   source                = "./modules/flow"
@@ -62,4 +62,6 @@ module "archy_flow" {
   data_action_name_2      = module.update_data_table_data_action.action_name
   data_action_name_3      = module.update_external_gamification_metric_action.action_name
   data_table_name         = module.data_table.datatable_name
+  data_table_id           = module.data_table.datatable_id
+  metric_id               = module.employeeperformance_externalmetrics_definitions.metric_id
 }

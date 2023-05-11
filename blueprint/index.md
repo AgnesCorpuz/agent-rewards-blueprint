@@ -24,8 +24,7 @@ To invoke this experience, an agent uses their desktop to transfer the voice int
 
 This Blueprint provides all the components to accomplish a simple agent rewards solution. It is important to note that rewards presented to the customer are converted into a point system for the agent. There are many reasons for this abstraction, one of which is that rewarding a busy agent with hundreds of cups of coffee might not turn out to be a good thing. For this reason, converting the rewards and associated reward points into actual benefits for the agent is an exercise left to the reader.
 
-This Blueprint is going to take you through the steps and definitions to configure your Genesys Cloud organization.  You can see a simple video of this Blueprint in action at: <Video not yet uploaded>
-
+This Blueprint is going to take you through the steps and definitions to configure your Genesys Cloud organization.
 
 ![Agent Rewards](images/overview.png "Agent Rewards")
 
@@ -68,7 +67,7 @@ An organization wants to empower the customer to thank the agent in a tangible w
 
 ### Download the repository containing the project files
 
-1. Clone the [agent-rewards-blueprint repository](https://github.com/GenesysCloudBlueprints/agent-rewards-blueprint "Opens the agent-rewards-blueprint repository in GitHub").
+1. Clone the [agent-rewards-external-metrics-blueprint repository](https://github.com/GenesysCloudBlueprints/agent-rewards-external-metrics-blueprint "Opens the agent-rewards-external-metrics-blueprint repository in GitHub").
 
 ### Set up Genesys Cloud
 
@@ -112,24 +111,40 @@ After the `terraform apply --auto-approve` command completes, you should see the
 
 * As long as you keep your local Terraform backing state projects, you can tear down this blueprint solution by changing to the `docs/terraform` folder and issuing a `terraform destroy --auto-approve` command. This command destroys all objects currently managed by the local Terraform backing state.
 
+### Gamification External Metric
+
+1. Get the External Metric ID by going to **Admin** > **Performance & Engagement** > **External Metric Definitions**
+   ![External Metric](images/external-metric.png "External Metric")
+2. Include the External Metric in the Gamification Profile in **Admin** > **Performance & Engagement** > **Gamification Profiles**. You can set the parameters for your points to show Targets, Good Performance, and Out of Bounds.
+   ![Gamification Profile](images/gamification-profile.png "Gamification Profile")
+
 ### Test the solution
 
-<!-- 1. Go to your website and start a web message.
-   ![Start web message interaction](images/1-customer-interaction.png "Start web message interaction")
-2. To answer the message as an agent, in your Genesys Cloud organization change your status to **On Queue** and answer the incoming interaction.
-3. Interact with the customer by sending responses as an agent.
-   ![Agent message interaction](images/2-agent-interaction.png "Agent message interaction")
-4. End the interaction with the customer and select a wrap-up code.
-   ![Select wrap-up code](images/3-processed-wrapup.png "Select wrap-up code")
-5. As a customer, send another message. Select Yes from the quick response to be connected again to an agent.
-   ![Customer answers yes](images/4-quick-response.png "Customer answers yes")
-6. As an agent, answer the interaction and resume your conversation with the customer.
-   ![Agent message interaction](images/5-update-order.png "Agent message interaction")
-7. As an agent, end the interaction and select a wrap-up code.
-   ![Select wrap-up code](images/6-processed-wrapup-2.png "Select wrap-up code")
-8. As a customer, send another message and select No from the quick response.
-   ![Customer answers no](images/7-quick-response-no.png "Customer answers no")
-9. The last customer's message will not be routed to ACD and agent. -->
+1. In Genesys Cloud Admin, assign a number to the created inbound call flow.
+   ![Call Routing](images/call-routing.png "Call Routing")
+
+2. As a customer, make a call to a number assigned to an assigned agent.
+3. As an agent, go On Queue and answer the incoming call.
+4. Make a Blind Transfer to the number assigned to the Agent Rewards call flow.
+   ![Blind Transfer](images/blind-transfer.png "Blind Transfer")
+5. The customer is greeted with an audio prompt saying *"Thank you for participating in a review of your call. Given your experience, how likely are you to recommend our company to your family or friends.  For extremely likely, press 1.  For very likely, press 2.  For moderately likely, press 3.  For slightly likely, press 4.  And for not at all likely, press 5."*
+6. If the customer pressed 1, 2 or 3, the audio prompt will say *"Would you like to reward your agent for their help on the call.  For yes, press 1.  For no, press 2."*
+7. If the customer wants to reward the agent, the audio proompt will ask from a list on what to reward the agent by saying *"Which reward would you like us to give the agent.  This is at no cost to you.  For a high five, press 1.  For a soft drink, press 2.  For a delivered snack, press 3.  Or for a specialty coffee, press 4."*
+8. Which ever the customer chooses, the audio prompt will confirm the reward will be given to the agent and the agent will earn a score accordingly:
+   * High Five - 10 points
+   * Soft drink - 20 points
+   * Snack - 30 points
+   * Coffee - 40 points
+9. The audio prompt will now say *"Thank you for the review.  Goodbye."* and will end the voice interaction.
+10. The data table will be updated to add the agent's new score.
+    ![Data Table](images/data-table.png "Data Table")
+
+  :::primary
+  **Tip**: The agent ID should already be existing in the data table to earn points.
+  :::
+11. The agent's scorecard will reflect the points earned from the Agent Rewards under **Performance** > **Scorecard**
+    ![Scoreboard](images/scoreboard.png "Scoreboard")
+
 
 ## Additional resources
 

@@ -335,11 +335,11 @@ inboundCall:
                                                                                           {{data_action_name_2}}:
                                                                                             inputs:
                                                                                               datatableid:
-                                                                                                lit: ad3a6296-0f13-4ed5-bc76-d02084627cfe
+                                                                                                lit: {{data_table_id}}
                                                                                               key:
-                                                                                                lit: 186d2336-306d-454b-8427-3afdf14621cd
+                                                                                                exp: Task.AgentID
                                                                                               score:
-                                                                                                noValue: true
+                                                                                                exp: Task.CurrentScore
                                                                                             successOutputs:
                                                                                               key:
                                                                                                 noValue: true
@@ -362,7 +362,7 @@ inboundCall:
                                                                                                         date:
                                                                                                           exp: ToString(GetCurrentDateTimeUtc())
                                                                                                         metricId:
-                                                                                                          lit: 3d9a939b-4a3f-4dbf-8bab-bfe6488c00a1
+                                                                                                          lit: {{metric_id}}
                                                                                                         score:
                                                                                                           exp: Task.CurrentScore
           - playAudio:
